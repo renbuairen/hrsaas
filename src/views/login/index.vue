@@ -25,11 +25,15 @@
         <i class="svg-container">
           <svg-icon iconClass="password"></svg-icon>
         </i>
-        <el-input type="password" v-model="loginForm.password"></el-input>
+        <el-input
+          type="password"
+          v-model="loginForm.password"
+          @keyup.enter.native="login"
+        ></el-input>
       </el-form-item>
 
       <el-button
-        :loading="isloading"
+        :loading="isLoading"
         class="loginBtn"
         type="primary"
         style="width: 100%; margin-bottom: 30px"
@@ -52,7 +56,7 @@ export default {
     return {
       //1.定义数据
       loginForm: {
-        mobile: '13800000004',
+        mobile: '13800000002',
         password: '123456'
       },
       loginFormRules: {
@@ -75,12 +79,12 @@ export default {
           // }
         ]
       },
-      isloading: false
+      isLoading: false
     }
   },
   methods: {
     async login() {
-      this.isloading = true
+      this.isLoading = true
       try {
         await this.$refs.loginForm.validate()
         console.log('校验成功，可以登录')
@@ -88,7 +92,7 @@ export default {
         this.$router.push('/')
         this.$message.success('登录成功')
       } finally {
-        this.isloading = false
+        this.isLoading = false
       }
     }
   }
