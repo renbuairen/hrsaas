@@ -11,9 +11,10 @@ import '@/styles/index.scss' // global css
 import App from './App'
 import store from './store'
 import router from './router'
-
 import '@/icons' // icon
 import '@/permission' // permission control
+// 全部导出 并设置别名
+import * as directives from '@/directives'
 
 // mock假数据
 if (process.env.NODE_ENV === 'production') {
@@ -28,9 +29,14 @@ Vue.use(ElementUI, { locale })
 
 Vue.config.productionTip = false
 
+//循环注册
+for (const key in directives) {
+  Vue.directive(key, directives[key])
+}
+
 new Vue({
   el: '#app',
   router,
   store,
-  render: h => h(App)
+  render: (h) => h(App)
 })
