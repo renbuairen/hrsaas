@@ -11,7 +11,7 @@ const service = axios.create({
   timeout: 5000
 })
 
-const timeout = 10 * 1000
+const timeout = 2 * 60 * 60 * 1000
 
 function isTimeOut() {
   const currentTime = Date.now()
