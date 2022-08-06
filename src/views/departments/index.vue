@@ -7,15 +7,22 @@
         <!-- 树形 -->
         <el-tree :data="treeData" :props="defaultProps" default-expand-all>
           <template v-slot="{ data }">
-            <TreeTools :treeNode="data" />
+            <TreeTools
+              @add="showAddDept"
+              :treeNode="data"
+              @delDepts="loadDepts"
+            />
           </template>
         </el-tree>
       </el-card>
     </div>
+    <!-- 添加弹窗层 -->
+    <AddDept :visible.sync="dialogVisible" :currentNode="currentNode"></AddDept>
   </div>
 </template>
 
 <script>
+import AddDept from '@/views/departments/components/add-dept.vue'
 import TreeTools from './components/tree-tools.vue'
 import { getDeptsApi } from '@/api/departments'
 import { transListToTree } from '@/utils'
@@ -26,11 +33,14 @@ export default {
       defaultProps: {
         label: 'name' // 将data中哪个数据名显示到树形页面中
       },
-      company: { name: '传智教育', manager: '负责人' }
+      company: { name: '传智教育', manager: '负责人' },
+      dialogVisible: false,
+      currentNode: {}
     }
   },
   components: {
-    TreeTools
+    TreeTools,
+    AddDept
   },
 
   created() {
@@ -39,8 +49,13 @@ export default {
 
   methods: {
     async loadDepts() {
+      console.log(1)
       const res = await getDeptsApi()
       this.treeData = transListToTree(res.depts, '')
+    },
+    showAddDept(val) {
+      this.dialogVisible = true
+      this.currentNode = val
     }
   }
 }
