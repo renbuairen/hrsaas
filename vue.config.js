@@ -39,7 +39,7 @@ module.exports = {
     proxy: {
       // http://Localhost:8888/api/Login
       '/api': {
-        target: 'http://ihrm.itheima.net/'
+        target: 'http://ihrm-java.itheima.net/'
       }
     }
   },
