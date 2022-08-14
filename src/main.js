@@ -6,6 +6,9 @@ import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
 import locale from 'element-ui/lib/locale/lang/en' // lang i18n
 
+// 全部导出 并设置别名
+import * as filters from '@/filters'
+
 import '@/styles/index.scss' // global css
 
 import App from './App'
@@ -35,6 +38,11 @@ Vue.config.productionTip = false
 //循环注册
 for (const key in directives) {
   Vue.directive(key, directives[key])
+}
+
+//循环注册过滤器
+for (const key in filters) {
+  Vue.filter(key, filters[key])
 }
 
 new Vue({
