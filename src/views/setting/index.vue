@@ -13,7 +13,9 @@
             <el-table-column prop="description" label="描述"> </el-table-column>
             <el-table-column label="操作">
               <template>
-                <el-button size="small" type="success">分配权限</el-button>
+                <el-button size="small" type="success" @click="showRightsDialog"
+                  >分配权限</el-button
+                >
                 <el-button size="small" type="primary">编辑</el-button>
                 <el-button size="small" type="danger">删除</el-button>
               </template>
@@ -83,13 +85,37 @@
         <el-button type="primary" @click="onAddRole">确 定</el-button>
       </span>
     </el-dialog>
+
+    <!-- 给角色分配权限 -->
+    <el-dialog
+      title="给角色分配权限"
+      :visible.sync="setRightsDialog"
+      width="50%"
+    >
+      <el-tree
+        default-expand-all
+        node-key="id"
+        :default-checked-keys="defaultCheckKeys"
+        :props="{ label: 'name' }"
+        show-checkbox
+        :data="permissions"
+      >
+      </el-tree>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="setRightsDialog = false">取 消</el-button>
+        <el-button type="primary">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
 <script>
 import { getRolesApi, addRoleApi } from '@/api/role.js'
 import { getCompanyInfoApi } from '@/api/setting'
+import { getPermissionList } from '@/api/permission'
+import { transListToTree } from '@/utils'
 export default {
+  name: 'Permission',
   data() {
     return {
       activeName: 'first',
@@ -108,12 +134,16 @@ export default {
       name: '',
       companyAddress: '',
       mailbox: '',
-      remarks: ''
+      remarks: '',
+      setRightsDialog: false,
+      permissions: [],
+      defaultCheckKeys: ['1', '1063315016368918528']
     }
   },
   created() {
     this.getRoles()
     this.getCompanyInfo()
+    this.getPermissions()
   },
   methods: {
     async getRoles() {
@@ -157,6 +187,18 @@ export default {
       this.companyAddress = res.companyAddress
       this.mailbox = res.mailbox
       this.remarks = res.remarks
+    },
+
+    //点击分配权限显示对话框
+    showRightsDialog() {
+      this.setRightsDialog = true
+    },
+
+    //获取权限列表
+    async getPermissions() {
+      const res = await getPermissionList()
+      const treePermission = transListToTree(res, '0')
+      this.permissions = treePermission
     }
   }
 }

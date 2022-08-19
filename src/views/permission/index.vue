@@ -1,15 +1,19 @@
 <template>
   <div class="dashboard-container">
     <div class="app-container">
-      <h2>权限管理</h2>
+      <Setting />
     </div>
   </div>
 </template>
 
 <script>
+import Setting from '@/views/setting'
 export default {
   data() {
     return {}
+  },
+  components: {
+    Setting
   },
 
   created() {},
