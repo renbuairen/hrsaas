@@ -1,6 +1,6 @@
 <template>
   <div class="dashboard-container">
-    <div class="dashboard-text"></div>
+    <div class="dashboard-text">首页</div>
   </div>
 </template>
 
@@ -8,9 +8,7 @@
 export default {
   name: 'Dashboard',
   computed: {},
-  components: {
-    Uploadlmg
-  },
+  components: {},
   methods: {}
 }
 </script>

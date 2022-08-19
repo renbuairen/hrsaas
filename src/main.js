@@ -22,6 +22,9 @@ import * as directives from '@/directives'
 import components from '@/components'
 Vue.use(components)
 
+import Print from 'vue-print-nb'
+Vue.use(Print)
+
 // mock假数据
 if (process.env.NODE_ENV === 'production') {
   const { mockXHR } = require('../mock')
