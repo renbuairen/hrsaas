@@ -6,11 +6,19 @@
           <span>共{{ total }}条记录</span>
         </template>
         <template #right>
-          <el-button type="danger" @click="exportExcel">excel导出</el-button>
-          <el-button type="primary" @click="$router.push('/import')"
+          <el-button
+            type="primary"
+            @click="$router.push('/import')"
+            v-isHas="point.employees.import"
             >excel导入</el-button
           >
-          <el-button type="success" @click="addClose">新增员工</el-button>
+          <el-button type="danger" @click="exportExcel">excel导出</el-button>
+          <el-button
+            type="success"
+            @click="addClose"
+            v-if="isHas(point.employees.add)"
+            >新增员工</el-button
+          >
         </template>
       </PageTools>
       <!-- 放置表格和分页 -->
@@ -118,6 +126,7 @@
 <script>
 import { getEmployeesInfoApi, delEmployeeApi } from '@/api/employees'
 import employees from '@/constant/employees'
+import MixinPermission from '@/mixins/permission'
 import AddEmployees from './components/add-employees.vue'
 import AssignRole from './components/assign-role.vue'
 const { exportExcelMapPath, hireType } = employees
@@ -137,6 +146,7 @@ export default {
       currentEmployeesId: ''
     }
   },
+  mixins: [MixinPermission],
 
   created() {
     this.getEmployeesInfoCreated()

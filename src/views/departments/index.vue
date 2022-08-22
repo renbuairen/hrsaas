@@ -49,7 +49,6 @@ export default {
 
   methods: {
     async loadDepts() {
-      console.log(1)
       const res = await getDeptsApi()
       this.treeData = transListToTree(res.depts, '')
     },
