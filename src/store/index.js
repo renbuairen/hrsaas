@@ -4,8 +4,8 @@ import getters from './getters'
 import app from './modules/app'
 import settings from './modules/settings'
 import user from './modules/user'
-import createVuexPersisted from 'vuex-persistedstate'
 import permission from './modules/permission'
+import createVuexPersisted from 'vuex-persistedstate'
 
 Vue.use(Vuex)
 
@@ -14,7 +14,7 @@ const store = new Vuex.Store({
     app,
     settings,
     user,
-    permission
+    permission,
   },
   getters,
   plugins: [
@@ -22,12 +22,12 @@ const store = new Vuex.Store({
       reducer(state) {
         return {
           user: {
-            token: state.user.token
-          }
+            token: state.user.token,
+          },
         }
-      }
-    })
-  ]
+      },
+    }),
+  ],
 })
 
 export default store

@@ -22,25 +22,26 @@ export default {
   data() {
     return {}
   },
+
   props: {
     leftIcon: {
       type: String,
-      default: 'el-icon-info'
+      default: 'el-icon-info',
     },
     isShowLeft: {
       type: Boolean,
-      default: true
-    }
+      default: true,
+    },
   },
 
   created() {},
 
-  methods: {}
+  methods: {},
 }
 </script>
 
 <style scoped lang="scss">
 .box-card {
-  margin: 20px 0;
+  margin: 10px 0;
 }
 </style>

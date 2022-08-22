@@ -1,7 +1,9 @@
 import request from '@/utils/request'
-
-export function getCompanyInfoApi(companyIdy) {
+/**
+ * 获取公司信息
+ * **/
+export function getCompanyInfoApi(companyId) {
   return request({
-    url: `/company/${companyIdy}`
+    url: `/company/${companyId}`,
   })
 }

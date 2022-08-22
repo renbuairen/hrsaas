@@ -4,42 +4,39 @@
       <el-tabs v-model="activeName">
         <el-tab-pane label="角色管理" name="first">
           <el-button
-            type="primary"
-            @click="addDialogVisible = true"
             v-if="isHas(point.roles.add)"
+            @click="addDialogVisible = true"
+            type="primary"
             >新增角色</el-button
           >
-          <!--表格-->
+          <!-- 表格 -->
           <el-table :data="tableData" style="width: 100%">
             <el-table-column type="index" label="序号"> </el-table-column>
             <el-table-column prop="name" label="角色"> </el-table-column>
             <el-table-column prop="description" label="描述"> </el-table-column>
             <el-table-column label="操作">
-              <template v-slot="{ row }">
+              <template slot-scope="{ row }">
                 <el-button
                   size="small"
                   type="success"
                   @click="showRightsDialog(row.id)"
                   >分配权限</el-button
                 >
-                <el-button
-                  size="small"
-                  type="primary"
-                  v-if="isHas(point.roles.edit)"
-                  >编辑</el-button
+                <el-button size="small" type="primary">编辑</el-button>
+                <el-button size="small" type="danger" @click="onRemove(row.id)"
+                  >删除</el-button
                 >
-                <el-button size="small" type="danger">删除</el-button>
               </template>
             </el-table-column>
           </el-table>
-          <!--分页-->
+          <!-- 分页 -->
           <el-pagination
             :page-size="pageSize"
+            :page-sizes="[3, 5, 10, 20]"
             layout="sizes,prev, pager, next"
-            :page-sizes="[3, 10, 15, 20]"
             :total="total"
             @current-change="currentChange"
-            @size-change="sizeChange"
+            @size-change="handleSizeChange"
           >
           </el-pagination>
         </el-tab-pane>
@@ -53,47 +50,50 @@
           </el-alert>
           <el-form ref="form" label-width="80px">
             <el-form-item label="公司名称">
-              <el-input v-model="name" disabled></el-input>
+              <el-input v-model="companyInfo.name" disabled></el-input>
             </el-form-item>
             <el-form-item label="公司地址">
-              <el-input v-model="companyAddress" disabled></el-input>
+              <el-input
+                v-model="companyInfo.companyAddress"
+                disabled
+              ></el-input>
             </el-form-item>
             <el-form-item label="公司邮箱">
-              <el-input v-model="mailbox" disabled></el-input>
+              <el-input v-model="companyInfo.mailbox" disabled></el-input>
             </el-form-item>
             <el-form-item label="备注">
-              <el-input v-model="remarks" disabled></el-input>
+              <el-input v-model="companyInfo.remarks" disabled></el-input>
             </el-form-item>
           </el-form>
         </el-tab-pane>
       </el-tabs>
     </div>
 
-    <!--添加角色对话框-->
+    <!-- 添加角色对话框 -->
     <el-dialog
-      title="新增角色"
       @close="dialogClose"
+      title="新增角色"
       :visible.sync="addDialogVisible"
       width="50%"
     >
+      <!-- :model -->
+      <!-- v-model @input :value -->
       <el-form
-        ref="form"
-        label-width="80px"
         :model="addRoleForm"
         :rules="addRoleFormRules"
+        ref="form"
+        label-width="80px"
       >
         <el-form-item label="角色名称" prop="name">
           <el-input v-model="addRoleForm.name"></el-input>
         </el-form-item>
-        <el-form-item label="角色描述" prop="region">
+        <el-form-item label="角色描述">
           <el-input v-model="addRoleForm.region"></el-input>
         </el-form-item>
       </el-form>
-
-      <!-- 按钮 -->
       <span slot="footer" class="dialog-footer">
         <el-button @click="onClose">取 消</el-button>
-        <el-button type="primary" @click="onAddRole">确 定</el-button>
+        <el-button @click="onAddRole" type="primary">确 定</el-button>
       </span>
     </el-dialog>
 
@@ -101,20 +101,19 @@
     <el-dialog
       title="给角色分配权限"
       :visible.sync="setRightsDialog"
-      @close="setRightsClose"
-      destroy-on-close
       width="50%"
+      destroy-on-close
+      @close="setRightsClose"
     >
       <el-tree
-        ref="perTree"
         default-expand-all
+        show-checkbox
         node-key="id"
+        :data="permissions"
         :default-checked-keys="defaultCheckKeys"
         :props="{ label: 'name' }"
-        show-checkbox
-        :data="permissions"
-      >
-      </el-tree>
+        ref="perTree"
+      ></el-tree>
       <span slot="footer" class="dialog-footer">
         <el-button @click="setRightsDialog = false">取 消</el-button>
         <el-button type="primary" @click="onSaveRights">确 定</el-button>
@@ -127,15 +126,15 @@
 import {
   getRolesApi,
   addRoleApi,
+  removeRoleApi,
   getRolesInfo,
-  assignPerm
+  assignPerm,
 } from '@/api/role.js'
-import MixinPermission from '@/mixins/permission'
-import { getCompanyInfoApi } from '@/api/setting'
+import { getCompanyInfoApi } from '@/api/setting.js'
 import { getPermissionList } from '@/api/permission'
 import { transListToTree } from '@/utils'
+import MixinPermission from '@/mixins/permission'
 export default {
-  name: 'Permission',
   data() {
     return {
       activeName: 'first',
@@ -145,22 +144,21 @@ export default {
       page: 1,
       addDialogVisible: false,
       addRoleForm: {
-        name: '',
-        region: ''
+        name: '', // 部门名称
+        region: '',
       },
       addRoleFormRules: {
-        name: [{ required: true, message: '请输入活动名称', trigger: 'blur' }]
+        name: [{ required: true, message: '请填写部门名称', trigger: 'blur' }],
       },
-      name: '',
-      companyAddress: '',
-      mailbox: '',
-      remarks: '',
+      companyInfo: {},
       setRightsDialog: false,
-      permissions: [],
-      defaultCheckKeys: [],
-      roleId: ''
+      permissions: [], // 权限树形数据
+      defaultCheckKeys: [], // 分配权限选中项
+      roleId: '',
     }
   },
+
+  // 混入
   mixins: [MixinPermission],
 
   created() {
@@ -168,11 +166,12 @@ export default {
     this.getCompanyInfo()
     this.getPermissions()
   },
+
   methods: {
     async getRoles() {
       const { rows, total } = await getRolesApi({
         page: this.page,
-        pagesize: this.pageSize
+        pagesize: this.pageSize,
       })
       this.tableData = rows
       this.total = total
@@ -181,68 +180,69 @@ export default {
       this.page = val
       this.getRoles()
     },
-    sizeChange(val) {
+    handleSizeChange(val) {
       this.pageSize = val
       this.getRoles()
     },
-    //点击取消
+    // 点击取消
     onClose() {
       this.addDialogVisible = false
     },
     async onAddRole() {
       await this.$refs.form.validate()
       await addRoleApi(this.addRoleForm)
-      this.$message.success('添加成')
+      this.$message.success('添加成功')
       this.addDialogVisible = false
       this.getRoles()
     },
-    //监听对话框关闭
+    // 监听对话框关闭
     dialogClose() {
-      //前置:只能重置有校验的表单
+      // 前置: 只能重置有校验的表单
       this.$refs.form.resetFields()
       this.addRoleForm.region = ''
+    },
+    async onRemove(id) {
+      await removeRoleApi(id)
+      this.$message.success('删除成功')
+      this.getRoles()
     },
     async getCompanyInfo() {
       const res = await getCompanyInfoApi(
         this.$store.state.user.userInfo.companyId
       )
-      this.name = res.name
-      this.companyAddress = res.companyAddress
-      this.mailbox = res.mailbox
-      this.remarks = res.remarks
+      // console.log(res)
+      this.companyInfo = res
     },
-
-    //点击分配权限显示对话框
+    // 点击分配权限显示对话框
     async showRightsDialog(id) {
       this.roleId = id
       this.setRightsDialog = true
       const res = await getRolesInfo(id)
+      // console.log()
       this.defaultCheckKeys = res.permIds
     },
-
-    //获取权限列表
+    // 获取权限列表
     async getPermissions() {
       const res = await getPermissionList()
       const treePermission = transListToTree(res, '0')
       this.permissions = treePermission
     },
-
     // 监听设置权限对话框关闭
     setRightsClose() {
+      // console.log(123)
       this.defaultCheckKeys = []
     },
-
-    //保存权限分配
+    // 保存权限分配
     async onSaveRights() {
       await assignPerm({
         id: this.roleId,
-        permIds: this.$refs.perTree.getCheckedKeys()
+        permIds: this.$refs.perTree.getCheckedKeys(),
       })
       this.$message.success('分配成功')
       this.setRightsDialog = false
-    }
-  }
+    },
+  },
 }
 </script>
 
-<style scoped lang="scss"></style>
+<style scoped lang="less"></style>

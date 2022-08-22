@@ -1,26 +1,17 @@
 <template>
-  <div class="dashboard-container">
-    <div class="dashboard-text">首页</div>
-  </div>
+  <div>首页</div>
 </template>
 
 <script>
 export default {
-  name: 'Dashboard',
-  computed: {},
-  components: {},
-  methods: {}
+  data() {
+    return {}
+  },
+
+  created() {},
+
+  methods: {},
 }
 </script>
 
-<style lang="scss" scoped>
-.dashboard {
-  &-container {
-    margin: 30px;
-  }
-  &-text {
-    font-size: 30px;
-    line-height: 46px;
-  }
-}
-</style>
+<style scoped lang="less"></style>

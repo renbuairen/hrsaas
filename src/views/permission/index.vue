@@ -11,26 +11,24 @@
         ref="table"
         row-key="id"
         :data="permissions"
-        slot="right"
         style="width: 100%"
       >
         <el-table-column label="名称" width="180">
           <template v-slot="{ row }">
             <i
-              @click="expend(row)"
               v-if="row.children"
               style="margin-right: 5px"
               class="el-icon-folder-opened"
+              @click="expend(row)"
             ></i>
-            <i
+            <!-- <i
               v-if="row.type === 2"
-              style="margin-right: 5px"
               class="el-icon-folder"
-            ></i>
+              style="margin-right: 5px"
+            ></i> -->
             <span>{{ row.name }}</span>
           </template>
         </el-table-column>
-
         <el-table-column prop="code" label="标识" width="180">
         </el-table-column>
         <el-table-column prop="description" label="描述"> </el-table-column>
@@ -70,9 +68,9 @@
       <el-row slot="footer" type="flex" justify="center">
         <el-col :span="6">
           <el-button size="small" type="primary" @click="onSave"
-            >确定
-          </el-button>
-          <el-button size="small" @click="showDialog = false">取消</el-button>
+            >确定</el-button
+          >
+          <el-button size="small">取消</el-button>
         </el-col>
       </el-row>
     </el-dialog>
@@ -92,18 +90,19 @@ export default {
         description: '', // 描述
         type: '', // 类型 该类型 不需要显示 因为点击添加的时候已经知道类型了
         pid: '', // 因为做的是树 需要知道添加到哪个节点下了
-        enVisible: '0' // 开启
+        enVisible: '0', // 开启
       },
       rules: {
         name: [
-          { required: true, message: '权限名称不能为空', trigger: 'blur' }
+          { required: true, message: '权限名称不能为空', trigger: 'blur' },
         ],
-        code: [{ required: true, message: '权限标识不能为空', trigger: 'blur' }]
+        code: [
+          { required: true, message: '权限标识不能为空', trigger: 'blur' },
+        ],
       },
-      showDialog: false
+      showDialog: false,
     }
   },
-  components: {},
 
   created() {
     this.getPermissions()
@@ -115,9 +114,9 @@ export default {
       this.permissions = transListToTree(res, '0')
     },
     expend(row) {
-      // console.log('点击展开')
+      // console.log('点击展开', row)
       row.isExpand = !row.isExpand
-      this.$refs.table.toggleRowExpansion(row, this.isExpand)
+      this.$refs.table.toggleRowExpansion(row, row.isExpand)
     },
     showAddDialog(id, type) {
       this.showDialog = true
@@ -127,14 +126,13 @@ export default {
     onSave() {
       this.$refs.form.validate(async (valid) => {
         if (!valid) return
-        // console.log('发送请求', this.formData)
         await addPermission(this.formData)
         this.$message.success('添加成功')
         this.showDialog = false
         this.getPermissions()
       })
-    }
-  }
+    },
+  },
 }
 </script>
 

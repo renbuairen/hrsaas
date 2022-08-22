@@ -1,7 +1,6 @@
 <template>
-  <el-dialog title="新增员工" :visible="visible" @close="onClose" width="50%">
-    <!-- 表单 -->
-    <el-form :model="formData" :rules="rules" label-width="120px" ref="form">
+  <el-dialog @close="onClose" title="新增员工" :visible="visible" width="50%">
+    <el-form ref="form" :model="formData" :rules="rules" label-width="120px">
       <el-form-item label="姓名" prop="username">
         <el-input
           v-model="formData.username"
@@ -46,17 +45,22 @@
         />
       </el-form-item>
       <el-form-item label="部门" prop="departmentName">
+        <!-- <el-input
+          v-model="formData.departmentName"
+          style="width: 50%"
+          placeholder="请选择部门"
+        /> -->
         <el-select
+          @focus="getDepts"
           v-model="formData.departmentName"
           placeholder="请选择部门"
-          @focus="getDepts"
           ref="deptSelect"
         >
-          <el-option class="treeOption" value="" v-loading="isTreeLoading">
+          <el-option class="treeOption" v-loading="isTreeLoading" value="">
             <el-tree
-              :data="depts"
-              :props="treeFormat"
               @node-click="treeNodeClick"
+              :data="depts"
+              :props="treeProps"
             ></el-tree>
           </el-option>
         </el-select>
@@ -69,35 +73,22 @@
         />
       </el-form-item>
     </el-form>
-    <!-- footer插槽 -->
-    <template v-slot:footer>
-      <el-row type="flex" justify="center">
-        <el-col :span="6">
-          <el-button size="small" @click="onClose">取消</el-button>
-          <el-button type="primary" @click="onSave" size="small"
-            >确定</el-button
-          >
-        </el-col>
-      </el-row>
-    </template>
+    <span slot="footer" class="dialog-footer">
+      <el-button @click="onClose">取 消</el-button>
+      <el-button @click="onSave" type="primary">确 定</el-button>
+    </span>
   </el-dialog>
 </template>
 
 <script>
-import { addEmployee } from '@/api/employees'
-import { getDeptsApi } from '@/api/departments'
-import { transListToTree } from '@/utils/index'
 import employees from '@/constant/employees'
+import { getDeptsApi } from '@/api/departments'
+import { transListToTree } from '@/utils'
+import { addEmployee } from '@/api/employees'
 const { hireType } = employees
 export default {
   data() {
     return {
-      depts: [],
-      hireType,
-      treeFormat: {
-        label: 'name'
-      },
-      isTreeLoading: false,
       formData: {
         username: '',
         mobile: '',
@@ -105,7 +96,7 @@ export default {
         workNumber: '',
         departmentName: '',
         timeOfEntry: '',
-        correctionTime: ''
+        correctionTime: '',
       },
       rules: {
         username: [
@@ -113,36 +104,46 @@ export default {
           {
             min: 1,
             max: 4,
-            message: '用户姓名为1-4位'
-          }
+            message: '用户姓名为1-4位',
+          },
         ],
         mobile: [
           { required: true, message: '手机号不能为空', trigger: 'blur' },
           {
             pattern: /^1[3-9]\d{9}$/,
             message: '手机号格式不正确',
-            trigger: 'blur'
-          }
+            trigger: 'blur',
+          },
         ],
         formOfEmployment: [
-          { required: true, message: '聘用形式不能为空', trigger: 'change' }
+          { required: true, message: '聘用形式不能为空', trigger: 'change' },
         ],
         workNumber: [
-          { required: true, message: '工号不能为空', trigger: 'blur' }
+          { required: true, message: '工号不能为空', trigger: 'blur' },
         ],
         departmentName: [
-          { required: true, message: '部门不能为空', trigger: 'change' }
+          { required: true, message: '部门不能为空', trigger: 'blur' },
         ],
-        timeOfEntry: [{ required: true, message: '入职时间', trigger: 'blur' }]
-      }
+        timeOfEntry: [
+          { required: true, message: '入职时间', trigger: 'change' },
+        ],
+      },
+      hireType,
+      depts: [],
+      treeProps: {
+        label: 'name',
+      },
+      isTreeLoading: false,
     }
   },
+
   props: {
     visible: {
       type: Boolean,
-      default: true
-    }
+      required: true,
+    },
   },
+
   created() {},
 
   methods: {
@@ -158,6 +159,7 @@ export default {
       this.isTreeLoading = false
     },
     treeNodeClick(row) {
+      // console.log(row)
       this.formData.departmentName = row.name
       this.$refs.deptSelect.blur()
     },
@@ -169,8 +171,8 @@ export default {
         this.onClose()
         this.$emit('add-success')
       })
-    }
-  }
+    },
+  },
 }
 </script>
 
@@ -180,6 +182,7 @@ export default {
   background-color: #fff;
   overflow: unset;
 }
+
 .treeOption {
   height: 100px;
 }

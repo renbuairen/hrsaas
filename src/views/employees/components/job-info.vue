@@ -15,8 +15,8 @@ export default {
 
   created() {},
 
-  methods: {}
+  methods: {},
 }
 </script>
 
-<style scoped lang="scss"></style>
+<style scoped lang="less"></style>

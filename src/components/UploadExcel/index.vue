@@ -10,6 +10,7 @@
         点击上传
       </el-button>
     </div>
+
     <input
       ref="excel-upload-input"
       class="excel-upload-input"
@@ -35,15 +36,15 @@ export default {
   name: 'UploadExcel',
   props: {
     beforeUpload: Function, // eslint-disable-line
-    onSuccess: Function // eslint-disable-line
+    onSuccess: Function, // eslint-disable-line
   },
   data() {
     return {
       loading: false,
       excelData: {
         header: null,
-        results: null
-      }
+        results: null,
+      },
     }
   },
   methods: {
@@ -133,8 +134,8 @@ export default {
     },
     isExcel(file) {
       return /\.(xlsx|xls|csv)$/.test(file.name)
-    }
-  }
+    },
+  },
 }
 </script>
 
